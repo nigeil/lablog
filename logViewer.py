@@ -71,3 +71,17 @@ class logViewer:
                 if (argv[2] <= entry.date <= argv[3]
                     or argv[2] >= entry.date >= argv[3]):
                     entry.fullDisplay()
+
+        #a "view USER" directive, shows all of their entries
+        elif(argv[2][0] != "+"): #not a tag
+            for entry in self.logEntries:
+                if (entry.user == argv[2]):
+                    entry.fullDisplay()
+
+        #a "view +TAG" directive, shows all entries with a tag
+        elif(argv[2][0] == "+"): #is a tag
+            for entry in self.logEntries:
+                for tag in entry.tags:
+                    if (argv[2] == ("+" + tag)):
+                        entry.fullDisplay()
+
