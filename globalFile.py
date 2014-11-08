@@ -28,6 +28,8 @@ Log begins below.
 
 """
 
+logbookFilename = "logbook.txt"
+
 #location of config file - best place for now?
 configLoc = os.path.join(os.environ['HOME'], ".lablog.conf")
 
