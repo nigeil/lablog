@@ -56,8 +56,9 @@ else:
 #check for specific commands at command line
 if command == 'add':
     #do add stuff
-    logbookfd = open(os.path.join(baseDir, logbookFilename), 'a')
-    add.add(sys.argv, logbookfd, user)
+    logbookfd = open(os.path.join(baseDir, logbookFilename), 'a+')
+    add.add(sys.argv, logbookfd, logbookFilename, baseDir, user)
+    logbookfd.close()
     print("Log entry added successfully")
 
 elif command == 'view':
@@ -100,8 +101,8 @@ elif command == "init":
             sys.exit(badExit)
     
     #initialize logbook (shouldn't get here if above fails)
-    logBookfd = open(os.path.join(baseDir, "logbook.txt"), 'w')
-    logBookfd.write(initStr)
+    logBookfd = open(os.path.join(baseDir, logbookFilename), 'w')
+    logBookfd.write(initStr+ "addFile:" +logbookFilename)
     logBookfd.close()
 
     #print some data to a config file
