@@ -1,12 +1,14 @@
 #!/usr/bin/python
 
 import dateutil.parser
-from color import color
+from globalFile import color
 
 class logEntry:
     def __init__ (self, timestamp, user, note, tags, 
             addedFiles, removedFiles):
         self.timestamp = timestamp
+        self.date = str(dateutil.parser.parse(
+            self.timestamp)).split()[0]
         self.user = user
         self.note = note
         self.tags = tags

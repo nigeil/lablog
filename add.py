@@ -4,6 +4,8 @@ import parse
 import datetime
 import updateFileList
 
+from globalFile import *
+
 #Adds a note and metadata to the logfile
 
 def add(argv, logbookfd, logbookFilename, baseDir, user):
@@ -23,7 +25,7 @@ def add(argv, logbookfd, logbookFilename, baseDir, user):
             newTag = parse.parse("+{tag}", word)
             if newTag is not None: 
                 #if it's a tag, add it to the tag list
-                meta.append(newTag['tag'])
+                meta.append("+" + newTag['tag'])
             else:
                 #otherwise add it to the note
                 note = note + " " + word
@@ -38,9 +40,9 @@ def add(argv, logbookfd, logbookFilename, baseDir, user):
             + str(meta) +"\n") 
     
     for file in filesToAdd:
-        writeMe = writeMe + "addFile:" + file +"\n"
+        writeMe = writeMe + addFileStr + file +"\n"
     for file in filesToRemove:
-        writeMe = writeMe + "removeFile:" + file + "\n"
+        writeMe = writeMe + removeFileStr + file + "\n"
     
     writeMe = writeMe + "+++End log entry+++\n\n"
     
