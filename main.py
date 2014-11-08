@@ -8,6 +8,8 @@ import configparser
 from subprocess import call, check_output
 
 import add
+import logViewer
+import logEntry
 
 #defining some things
 usageStr = ("usage: lablog [add, view, edit, sync, etc.]" 
@@ -63,6 +65,8 @@ if command == 'add':
 
 elif command == 'view':
     #do view stuff
+    logbookfd = open(os.path.join(baseDir, logbookFilename), 'r')
+    v = logViewer.logViewer(logbookfd)
     print("Log entry viewed successfully")
 
 elif command == 'sync':
