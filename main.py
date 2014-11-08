@@ -3,13 +3,16 @@
 import sys
 import os
 import errno
+import parse
+import configparser
 from subprocess import call, check_output
+
+import add
 
 #defining some things
 usageStr = ("usage: lablog [add, view, edit, sync, etc.]" 
            "[message, options, etc.]")
-#+++ signifies comment block in logbook
-initStr = """+++
+initStr = """+++++
 Logbook generated automatically by lablog, 
 an open-source electronic lab notebook tool.
 Copyright (C) 2014 Nigel S. Michki
@@ -24,7 +27,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Log begins below.
-+++"""
++++++
+
+"""
+
+configLoc = os.path.join(os.environ['HOME'], ".lablog.conf")
+badExit = 1
 
 #begin parsing command line input
 
@@ -32,8 +40,24 @@ if len(sys.argv) < 2:
     print(usageStr)
 command = sys.argv[1]
 
+#load info from config file
+if not os.path.isfile(configLoc):
+    print("Config file not found. Should be located at:\n" +
+            configLoc + "\n"
+            +"Try running $lablog init <baseDirName> if this"
+            +" is your first time using this program.")
+else:
+    config = configparser.RawConfigParser()
+    config.read(configLoc)
+    baseDir = config.get("Main", "baseDir")
+    user = config.get("Main", "user")
+    logbookFilename = config.get("Main", "logbookFilename")
+
+#check for specific commands at command line
 if command == 'add':
     #do add stuff
+    logbookfd = open(os.path.join(baseDir, logbookFilename), 'a')
+    add.add(sys.argv, logbookfd, user)
     print("Log entry added successfully")
 
 elif command == 'view':
@@ -54,6 +78,7 @@ elif command == "init":
 
     #initialize directory structure
     baseDir = sys.argv[2]
+    user = sys.argv[3]
     
     #check for window systems, change path accordingly
     if os.name == 'nt':
@@ -72,14 +97,24 @@ elif command == "init":
             " have permissions to create directories" 
             " here? Does a directory exist with the name" 
             " you provided?")
-            sys.exit(1)
+            sys.exit(badExit)
     
     #initialize logbook (shouldn't get here if above fails)
     logBookfd = open(os.path.join(baseDir, "logbook.txt"), 'w')
     logBookfd.write(initStr)
     logBookfd.close()
 
-    #print success string
+    #print some data to a config file
+    config = configparser.RawConfigParser()
+    config.add_section("Main")
+    config.set("Main", "baseDir", 
+            os.path.join(os.getcwd(), baseDir))
+    config.set("Main", "logbookFilename", "logbook.txt")
+    config.set("Main", "user", user)
+    with open(configLoc, 'w') as configfile:
+            config.write(configfile)
+
+    #print on success 
     print("Successfully initialized a logbook and basic"
           " directory structure. See manual for more" 
           " information")
